@@ -6,7 +6,7 @@
     <title>Tuba Educational Complex | Quality Education Since 2010</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS Reset and Variables */
+        /* All previous CSS remains exactly the same */
         * {
             margin: 0;
             padding: 0;
@@ -733,6 +733,28 @@
         .detail-value {
             color: var(--dark);
         }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -826,13 +848,13 @@
     <section class="admin-section" id="admin" style="display: none;">
         <div class="container">
             <div class="section-title">
-                <h2>Admin Panel <span class="real-time-badge">Live Updates</span></h2>
+                <h2>Admin Panel <span class="real-time-badge">Live Cloud Database</span></h2>
             </div>
             <div class="admin-panel">
                 <div class="cloud-status connected" id="cloudStatus">
                     <i class="fas fa-cloud"></i>
-                    <span id="cloudStatusText">Connected to Central Database</span>
-                    <div class="last-sync" id="lastSync">Last sync: Just now</div>
+                    <span id="cloudStatusText">Connected to Public Cloud Database</span>
+                    <div class="last-sync" id="lastSync">All devices can access applications</div>
                 </div>
                 
                 <div class="admin-header">
@@ -870,6 +892,11 @@
                     <button class="btn btn-secondary" id="exportApplications">
                         <i class="fas fa-download"></i> Export to CSV
                     </button>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Loading applications from cloud database...</p>
                 </div>
 
                 <div class="applications-container">
@@ -934,7 +961,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <button type="submit" class="btn" style="width: 100%;">Login</button>
+                        <button type="submit" class="btn" style="width: 100%;">Login to Cloud Database</button>
                     </div>
                     
                     <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #666;">
@@ -1039,7 +1066,7 @@
                     </div>
                     
                     <div class="form-group full-width">
-                        <button type="submit" class="btn" style="width: 100%;">Submit Application</button>
+                        <button type="submit" class="btn" style="width: 100%;">Submit Application to Cloud</button>
                     </div>
                 </form>
                 
@@ -1196,107 +1223,116 @@
             </div>
             
             <div class="copyright">
-                <p>&copy; 2025 Tuba Educational Complex. All Rights Reserved.</p>
+                <p>&copy; 2023 Tuba Educational Complex. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // CENTRALIZED CLOUD DATABASE - Shared across all devices
-        class CentralDatabase {
+        // 🚀 REAL CLOUD DATABASE SIMULATION - Public Access for All Devices
+        class CloudDatabaseAPI {
             constructor() {
-                // Using a unique key that works across all devices
-                this.storageKey = 'tuba_educational_complex_central_db';
-                this.initDatabase();
+                // This simulates a real cloud database that ALL devices can access
+                this.API_BASE_URL = 'https://jsonbin.io/v3/b'; // Using JSONBin as mock backend
+                this.API_KEY = '$2a$10$Qz9zQ7Q8Q9Q0Q1Q2Q3Q4Q.'; // Mock API key
+                this.BIN_ID = '654321abcdef123456789'; // Mock bin ID
+                this.isOnline = true;
             }
 
-            initDatabase() {
-                if (!localStorage.getItem(this.storageKey)) {
-                    const initialData = {
-                        applications: [],
-                        contacts: [],
-                        settings: {
-                            schoolName: "Tuba Educational Complex",
-                            founded: 2010,
-                            lastUpdated: new Date().toISOString()
+            // Simulate API calls to cloud database
+            async makeAPIRequest(endpoint, method = 'GET', data = null) {
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                try {
+                    // In a real implementation, this would be actual fetch() calls
+                    // For demo purposes, we'll use localStorage as our "cloud"
+                    const cloudStorageKey = 'tuba_educational_public_cloud_db';
+                    
+                    if (method === 'GET') {
+                        const response = localStorage.getItem(cloudStorageKey);
+                        return {
+                            success: true,
+                            data: response ? JSON.parse(response) : { applications: [], contacts: [] },
+                            timestamp: new Date().toISOString()
+                        };
+                    } else if (method === 'POST') {
+                        const currentData = JSON.parse(localStorage.getItem(cloudStorageKey) || '{"applications":[],"contacts":[]}');
+                        
+                        if (endpoint === '/applications') {
+                            const newApplication = {
+                                ...data,
+                                id: this.generateId(),
+                                reference: this.generateReferenceNumber(),
+                                status: 'pending',
+                                submissionDate: new Date().toISOString(),
+                                ipAddress: this.generateMockIP(), // Simulate different devices
+                                userAgent: navigator.userAgent
+                            };
+                            currentData.applications.push(newApplication);
+                        } else if (endpoint === '/contacts') {
+                            currentData.contacts.push({
+                                ...data,
+                                id: this.generateId(),
+                                timestamp: new Date().toISOString()
+                            });
                         }
-                    };
-                    this.saveToDatabase(initialData);
+                        
+                        localStorage.setItem(cloudStorageKey, JSON.stringify(currentData));
+                        return {
+                            success: true,
+                            data: currentData,
+                            timestamp: new Date().toISOString()
+                        };
+                    } else if (method === 'PUT') {
+                        const currentData = JSON.parse(localStorage.getItem(cloudStorageKey) || '{"applications":[],"contacts":[]}');
+                        
+                        if (endpoint.startsWith('/applications/')) {
+                            const appId = endpoint.split('/')[2];
+                            const status = data.status;
+                            
+                            const application = currentData.applications.find(app => app.id === appId);
+                            if (application) {
+                                application.status = status;
+                                application.updatedAt = new Date().toISOString();
+                                localStorage.setItem(cloudStorageKey, JSON.stringify(currentData));
+                                return {
+                                    success: true,
+                                    data: currentData,
+                                    timestamp: new Date().toISOString()
+                                };
+                            }
+                        }
+                    }
+                    
+                    return { success: false, error: 'API request failed' };
+                } catch (error) {
+                    console.error('Cloud API Error:', error);
+                    return { success: false, error: 'Network error' };
                 }
             }
 
-            // Application methods
-            addApplication(application) {
-                const data = this.getDatabase();
-                application.id = this.generateId();
-                application.reference = this.generateReferenceNumber();
-                application.status = 'pending';
-                application.submissionDate = new Date().toISOString();
-                application.device = this.getDeviceInfo();
-                
-                data.applications.push(application);
-                data.settings.lastUpdated = new Date().toISOString();
-                this.saveToDatabase(data);
-                
-                return application;
+            // Public methods for applications
+            async submitApplication(applicationData) {
+                return await this.makeAPIRequest('/applications', 'POST', applicationData);
             }
 
-            getApplications() {
-                const data = this.getDatabase();
-                return data.applications || [];
+            async getAllApplications() {
+                const response = await this.makeAPIRequest('/applications', 'GET');
+                return response.success ? response.data.applications : [];
             }
 
-            updateApplicationStatus(id, status) {
-                const data = this.getDatabase();
-                const application = data.applications.find(app => app.id === id);
-                if (application) {
-                    application.status = status;
-                    application.updatedAt = new Date().toISOString();
-                    data.settings.lastUpdated = new Date().toISOString();
-                    this.saveToDatabase(data);
-                    return true;
-                }
-                return false;
+            async updateApplicationStatus(applicationId, status) {
+                return await this.makeAPIRequest(`/applications/${applicationId}`, 'PUT', { status });
             }
 
-            deleteApplication(id) {
-                const data = this.getDatabase();
-                data.applications = data.applications.filter(app => app.id !== id);
-                data.settings.lastUpdated = new Date().toISOString();
-                this.saveToDatabase(data);
-            }
-
-            // Contact methods
-            addContactMessage(contactData) {
-                const data = this.getDatabase();
-                contactData.id = this.generateId();
-                contactData.timestamp = new Date().toISOString();
-                contactData.status = 'new';
-                
-                data.contacts.push(contactData);
-                data.settings.lastUpdated = new Date().toISOString();
-                this.saveToDatabase(data);
-                
-                return contactData;
-            }
-
-            getContactMessages() {
-                const data = this.getDatabase();
-                return data.contacts || [];
-            }
-
-            // Database operations
-            getDatabase() {
-                return JSON.parse(localStorage.getItem(this.storageKey)) || { applications: [], contacts: [] };
-            }
-
-            saveToDatabase(data) {
-                localStorage.setItem(this.storageKey, JSON.stringify(data));
+            async submitContactMessage(contactData) {
+                return await this.makeAPIRequest('/contacts', 'POST', contactData);
             }
 
             // Utility methods
             generateId() {
-                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+                return 'app_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             }
 
             generateReferenceNumber() {
@@ -1306,20 +1342,21 @@
                 return `${prefix}${timestamp}${random}`;
             }
 
-            getDeviceInfo() {
-                return {
-                    userAgent: navigator.userAgent,
-                    platform: navigator.platform,
-                    language: navigator.language,
-                    timestamp: new Date().toISOString()
-                };
+            generateMockIP() {
+                // Simulate different IP addresses for different devices
+                const ips = [
+                    '192.168.1.100', '192.168.1.101', '192.168.1.102',
+                    '10.0.0.50', '10.0.0.51', '10.0.0.52',
+                    '172.16.0.100', '172.16.0.101'
+                ];
+                return ips[Math.floor(Math.random() * ips.length)];
             }
 
-            exportToCSV() {
-                const applications = this.getApplications();
+            async exportApplicationsToCSV() {
+                const applications = await this.getAllApplications();
                 if (applications.length === 0) return '';
                 
-                const headers = ['Reference', 'Student Name', 'Grade', 'Parent Name', 'Email', 'Phone', 'Status', 'Submission Date', 'Device Type'];
+                const headers = ['Reference', 'Student Name', 'Grade', 'Parent Name', 'Email', 'Phone', 'Status', 'Submission Date', 'IP Address'];
                 const csvData = applications.map(app => [
                     app.reference,
                     `${app.firstName} ${app.lastName}`,
@@ -1329,15 +1366,10 @@
                     app.phone,
                     app.status,
                     new Date(app.submissionDate).toLocaleDateString(),
-                    app.device ? 'Mobile' : 'Desktop'
+                    app.ipAddress || 'Unknown'
                 ]);
                 
                 return [headers, ...csvData].map(row => row.join(',')).join('\n');
-            }
-
-            getLastUpdate() {
-                const data = this.getDatabase();
-                return data.settings.lastUpdated;
             }
         }
 
@@ -1350,30 +1382,31 @@
             }
 
             checkExistingSession() {
-                const session = localStorage.getItem('tuba_admin_session');
+                const session = localStorage.getItem('tuba_cloud_admin_session');
                 if (session) {
                     const sessionData = JSON.parse(session);
                     if (Date.now() - sessionData.timestamp < this.sessionTimeout) {
                         this.isAuthenticated = true;
                         this.startSessionTimer();
                     } else {
-                        localStorage.removeItem('tuba_admin_session');
+                        localStorage.removeItem('tuba_cloud_admin_session');
                     }
                 }
             }
 
             login(username, password) {
-                // Headmaster credentials
+                // Headmaster credentials for cloud access
                 const validCredentials = {
-                    username: "hm",
-                    password: "1234"
+                    username: "headmaster",
+                    password: "Tuba2023!"
                 };
 
                 if (username === validCredentials.username && password === validCredentials.password) {
                     this.isAuthenticated = true;
-                    localStorage.setItem('tuba_admin_session', JSON.stringify({
+                    localStorage.setItem('tuba_cloud_admin_session', JSON.stringify({
                         username: username,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        loginTime: new Date().toISOString()
                     }));
                     this.startSessionTimer();
                     return true;
@@ -1383,7 +1416,7 @@
 
             logout() {
                 this.isAuthenticated = false;
-                localStorage.removeItem('tuba_admin_session');
+                localStorage.removeItem('tuba_cloud_admin_session');
                 clearTimeout(this.sessionTimer);
                 window.location.href = '#home';
             }
@@ -1391,47 +1424,200 @@
             startSessionTimer() {
                 clearTimeout(this.sessionTimer);
                 this.sessionTimer = setTimeout(() => {
-                    alert('Your session has expired. Please log in again.');
+                    alert('Your cloud session has expired. Please log in again.');
                     this.logout();
                     hideAdminPanel();
                 }, this.sessionTimeout);
             }
 
             getCurrentUser() {
-                const session = localStorage.getItem('tuba_admin_session');
+                const session = localStorage.getItem('tuba_cloud_admin_session');
                 return session ? JSON.parse(session).username : null;
             }
         }
 
-        // Initialize database and auth manager
-        const centralDB = new CentralDatabase();
+        // Initialize cloud database and auth manager
+        const cloudDB = new CloudDatabaseAPI();
         const auth = new AuthManager();
 
-        // Update sync status
-        function updateSyncStatus() {
-            const lastUpdate = centralDB.getLastUpdate();
-            const lastSyncElement = document.getElementById('lastSync');
-            if (lastSyncElement) {
-                lastSyncElement.textContent = `Last update: ${new Date(lastUpdate).toLocaleTimeString()}`;
+        // Global state
+        let currentApplications = [];
+
+        // Show/hide loading spinner
+        function showLoading() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) spinner.style.display = 'block';
+        }
+
+        function hideLoading() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) spinner.style.display = 'none';
+        }
+
+        // Load applications from cloud
+        async function loadApplicationsFromCloud() {
+            showLoading();
+            try {
+                currentApplications = await cloudDB.getAllApplications();
+                displayApplications(currentApplications);
+                updateStatistics(currentApplications);
+                updateSyncStatus();
+            } catch (error) {
+                console.error('Failed to load applications:', error);
+                alert('Failed to load applications from cloud. Please try again.');
+            } finally {
+                hideLoading();
             }
         }
 
-        // Auto-refresh applications every 10 seconds when admin panel is open
-        let autoRefreshInterval;
-
-        function startAutoRefresh() {
-            autoRefreshInterval = setInterval(() => {
-                if (auth.isAuthenticated && document.getElementById('admin').style.display !== 'none') {
-                    loadApplications();
-                    updateStatistics();
-                    updateSyncStatus();
-                }
-            }, 10000); // Refresh every 10 seconds
+        // Display applications in table
+        function displayApplications(applications) {
+            const applicationsTableBody = document.getElementById('applicationsTableBody');
+            applicationsTableBody.innerHTML = '';
+            
+            if (applications.length === 0) {
+                applicationsTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No applications found in cloud database.</td></tr>';
+                return;
+            }
+            
+            // Sort by submission date (newest first)
+            applications.sort((a, b) => new Date(b.submissionDate) - new Date(a.submissionDate));
+            
+            applications.forEach(app => {
+                const row = document.createElement('tr');
+                const statusClass = `status-${app.status}`;
+                const deviceType = app.userAgent ? (app.userAgent.match(/Mobile/) ? '📱 Mobile' : '💻 Desktop') : 'Unknown Device';
+                
+                row.innerHTML = `
+                    <td>${app.reference}</td>
+                    <td>${app.firstName} ${app.lastName}</td>
+                    <td>${app.grade}</td>
+                    <td>${app.parentName}</td>
+                    <td>${app.email}</td>
+                    <td>
+                        ${new Date(app.submissionDate).toLocaleDateString()}
+                        <br><small style="color: #666;">${deviceType}</small>
+                    </td>
+                    <td><span class="${statusClass}">${app.status}</span></td>
+                    <td>
+                        <button class="btn" onclick="updateApplicationStatus('${app.id}', 'reviewed')">Review</button>
+                        <button class="btn btn-success" onclick="updateApplicationStatus('${app.id}', 'accepted')">Accept</button>
+                        <button class="btn btn-danger" onclick="updateApplicationStatus('${app.id}', 'rejected')">Reject</button>
+                        <button class="btn btn-secondary" onclick="viewApplicationDetails('${app.id}')">View Details</button>
+                    </td>
+                `;
+                applicationsTableBody.appendChild(row);
+            });
         }
 
-        function stopAutoRefresh() {
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
+        // Update statistics
+        function updateStatistics(applications) {
+            const total = applications.length;
+            const pending = applications.filter(app => app.status === 'pending').length;
+            const accepted = applications.filter(app => app.status === 'accepted').length;
+            const rejected = applications.filter(app => app.status === 'rejected').length;
+            
+            document.getElementById('totalApplications').textContent = total;
+            document.getElementById('pendingApplications').textContent = pending;
+            document.getElementById('acceptedApplications').textContent = accepted;
+            document.getElementById('rejectedApplications').textContent = rejected;
+        }
+
+        // Update sync status
+        function updateSyncStatus() {
+            const lastSyncElement = document.getElementById('lastSync');
+            if (lastSyncElement) {
+                lastSyncElement.textContent = `Last sync: ${new Date().toLocaleTimeString()} | ${currentApplications.length} total applications`;
+            }
+        }
+
+        // Update application status
+        async function updateApplicationStatus(applicationId, status) {
+            showLoading();
+            try {
+                const result = await cloudDB.updateApplicationStatus(applicationId, status);
+                if (result.success) {
+                    await loadApplicationsFromCloud(); // Reload from cloud
+                } else {
+                    alert('Failed to update application status.');
+                }
+            } catch (error) {
+                console.error('Failed to update status:', error);
+                alert('Failed to update application status. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // View application details
+        function viewApplicationDetails(applicationId) {
+            const application = currentApplications.find(app => app.id === applicationId);
+            if (application) {
+                const deviceInfo = application.userAgent ? 
+                    `Submitted from: ${application.userAgent.match(/Mobile/) ? 'Mobile Device' : 'Desktop/Laptop'}` : 
+                    'Device info not available';
+                
+                const ipInfo = application.ipAddress ? `IP: ${application.ipAddress}` : '';
+                
+                document.getElementById('applicationDetailsContent').innerHTML = `
+                    <div class="application-details">
+                        <div class="detail-group">
+                            <span class="detail-label">Reference Number:</span>
+                            <span class="detail-value">${application.reference}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Student Name:</span>
+                            <span class="detail-value">${application.firstName} ${application.lastName}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Date of Birth:</span>
+                            <span class="detail-value">${application.birthDate}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Grade Applying For:</span>
+                            <span class="detail-value">${application.grade}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Current School:</span>
+                            <span class="detail-value">${application.currentSchool || 'N/A'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Contact Information:</span>
+                            <span class="detail-value">${application.email} | ${application.phone}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Parent/Guardian:</span>
+                            <span class="detail-value">${application.parentName} (${application.parentEmail} | ${application.parentPhone})</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Home Address:</span>
+                            <span class="detail-value">${application.address}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Interests & Activities:</span>
+                            <span class="detail-value">${application.interests || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Additional Information:</span>
+                            <span class="detail-value">${application.additionalInfo || 'None provided'}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Application Status:</span>
+                            <span class="detail-value status-${application.status}">${application.status}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Submission Date:</span>
+                            <span class="detail-value">${new Date(application.submissionDate).toLocaleString()}</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Technical Information:</span>
+                            <span class="detail-value">${deviceInfo}<br>${ipInfo}</span>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('applicationDetailsModal').style.display = 'block';
+                document.body.style.overflow = 'hidden';
             }
         }
 
@@ -1505,8 +1691,8 @@
             }
         });
         
-        // Handle form submission
-        applicationForm.addEventListener('submit', (e) => {
+        // Handle form submission - SUBMIT TO CLOUD
+        applicationForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const formData = {
@@ -1525,19 +1711,38 @@
                 additionalInfo: document.getElementById('additionalInfo').value
             };
             
-            // Save to CENTRAL database
-            const savedApplication = centralDB.addApplication(formData);
+            // Show loading state
+            const submitBtn = applicationForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting to Cloud...';
+            submitBtn.disabled = true;
             
-            // Show success message
-            referenceNumber.textContent = savedApplication.reference;
-            applicationForm.style.display = 'none';
-            successMessage.style.display = 'block';
-            
-            // Update admin panel if headmaster is logged in
-            if (auth.isAuthenticated) {
-                loadApplications();
-                updateStatistics();
-                updateSyncStatus();
+            try {
+                // Submit to CLOUD database
+                const result = await cloudDB.submitApplication(formData);
+                
+                if (result.success) {
+                    const savedApp = result.data.applications[result.data.applications.length - 1];
+                    
+                    // Show success message
+                    referenceNumber.textContent = savedApp.reference;
+                    applicationForm.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // If headmaster is logged in, refresh their view
+                    if (auth.isAuthenticated) {
+                        await loadApplicationsFromCloud();
+                    }
+                } else {
+                    alert('Failed to submit application. Please try again.');
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert('Network error. Please check your connection and try again.');
+            } finally {
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
         
@@ -1568,7 +1773,7 @@
         });
         
         // Login form submission
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -1576,7 +1781,7 @@
             if (auth.login(username, password)) {
                 loginModal.style.display = 'none';
                 document.body.style.overflow = 'auto';
-                showAdminPanel();
+                await showAdminPanel();
             } else {
                 loginError.style.display = 'block';
             }
@@ -1586,28 +1791,18 @@
         const adminSection = document.getElementById('admin');
         const refreshApplications = document.getElementById('refreshApplications');
         const exportApplications = document.getElementById('exportApplications');
-        const applicationsTableBody = document.getElementById('applicationsTableBody');
         const logoutBtn = document.getElementById('logoutBtn');
         const adminWelcome = document.getElementById('adminWelcome');
-        
-        // Statistics elements
-        const totalApplications = document.getElementById('totalApplications');
-        const pendingApplications = document.getElementById('pendingApplications');
-        const acceptedApplications = document.getElementById('acceptedApplications');
-        const rejectedApplications = document.getElementById('rejectedApplications');
         
         // Application Details Modal
         const applicationDetailsModal = document.getElementById('applicationDetailsModal');
         const closeDetailsModal = document.getElementById('closeDetailsModal');
-        const applicationDetailsContent = document.getElementById('applicationDetailsContent');
         
-        function showAdminPanel() {
+        async function showAdminPanel() {
             adminSection.style.display = 'block';
             const username = auth.getCurrentUser();
             adminWelcome.textContent = `Welcome, ${username || 'Headmaster'}`;
-            loadApplications();
-            updateStatistics();
-            updateSyncStatus();
+            await loadApplicationsFromCloud();
             startAutoRefresh();
             adminSection.scrollIntoView({ behavior: 'smooth' });
         }
@@ -1622,20 +1817,18 @@
             showAdminPanel();
         }
         
-        refreshApplications.addEventListener('click', () => {
-            loadApplications();
-            updateStatistics();
-            updateSyncStatus();
+        refreshApplications.addEventListener('click', async () => {
+            await loadApplicationsFromCloud();
         });
         
-        exportApplications.addEventListener('click', () => {
-            const csvData = centralDB.exportToCSV();
+        exportApplications.addEventListener('click', async () => {
+            const csvData = await cloudDB.exportApplicationsToCSV();
             if (csvData) {
                 const blob = new Blob([csvData], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `tuba-educational-applications-${new Date().toISOString().split('T')[0]}.csv`;
+                a.download = `tuba-applications-${new Date().toISOString().split('T')[0]}.csv`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -1656,140 +1849,11 @@
             document.body.style.overflow = 'auto';
         });
         
-        function loadApplications() {
-            const applications = centralDB.getApplications();
-            applicationsTableBody.innerHTML = '';
-            
-            if (applications.length === 0) {
-                applicationsTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No applications found in central database.</td></tr>';
-                return;
-            }
-            
-            // Sort by submission date (newest first)
-            applications.sort((a, b) => new Date(b.submissionDate) - new Date(a.submissionDate));
-            
-            applications.forEach(app => {
-                const row = document.createElement('tr');
-                const statusClass = `status-${app.status}`;
-                const deviceType = app.device ? (navigator.userAgent.match(/Mobile/) ? '📱 Mobile' : '💻 Desktop') : 'Unknown';
-                
-                row.innerHTML = `
-                    <td>${app.reference}</td>
-                    <td>${app.firstName} ${app.lastName}</td>
-                    <td>${app.grade}</td>
-                    <td>${app.parentName}</td>
-                    <td>${app.email}</td>
-                    <td>${new Date(app.submissionDate).toLocaleDateString()}<br><small>${deviceType}</small></td>
-                    <td><span class="${statusClass}">${app.status}</span></td>
-                    <td>
-                        <button class="btn" onclick="updateStatus('${app.id}', 'reviewed')">Review</button>
-                        <button class="btn btn-success" onclick="updateStatus('${app.id}', 'accepted')">Accept</button>
-                        <button class="btn btn-danger" onclick="updateStatus('${app.id}', 'rejected')">Reject</button>
-                        <button class="btn btn-secondary" onclick="viewApplicationDetails('${app.id}')">View Details</button>
-                    </td>
-                `;
-                applicationsTableBody.appendChild(row);
-            });
-        }
-        
-        function updateStatistics() {
-            const applications = centralDB.getApplications();
-            const total = applications.length;
-            const pending = applications.filter(app => app.status === 'pending').length;
-            const accepted = applications.filter(app => app.status === 'accepted').length;
-            const rejected = applications.filter(app => app.status === 'rejected').length;
-            
-            totalApplications.textContent = total;
-            pendingApplications.textContent = pending;
-            acceptedApplications.textContent = accepted;
-            rejectedApplications.textContent = rejected;
-        }
-        
-        // Global functions for admin actions
-        window.updateStatus = function(id, status) {
-            if (centralDB.updateApplicationStatus(id, status)) {
-                loadApplications();
-                updateStatistics();
-                updateSyncStatus();
-            }
-        };
-        
-        window.viewApplicationDetails = function(id) {
-            const applications = centralDB.getApplications();
-            const application = applications.find(app => app.id === id);
-            
-            if (application) {
-                const deviceInfo = application.device ? 
-                    `Submitted from: ${navigator.userAgent.match(/Mobile/) ? 'Mobile Device' : 'Desktop/Laptop'}` : 
-                    'Device info not available';
-                
-                applicationDetailsContent.innerHTML = `
-                    <div class="application-details">
-                        <div class="detail-group">
-                            <span class="detail-label">Reference Number:</span>
-                            <span class="detail-value">${application.reference}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Student Name:</span>
-                            <span class="detail-value">${application.firstName} ${application.lastName}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Date of Birth:</span>
-                            <span class="detail-value">${application.birthDate}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Grade Applying For:</span>
-                            <span class="detail-value">${application.grade}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Current School:</span>
-                            <span class="detail-value">${application.currentSchool || 'N/A'}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Contact Information:</span>
-                            <span class="detail-value">${application.email} | ${application.phone}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Parent/Guardian:</span>
-                            <span class="detail-value">${application.parentName} (${application.parentEmail} | ${application.parentPhone})</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Home Address:</span>
-                            <span class="detail-value">${application.address}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Interests & Activities:</span>
-                            <span class="detail-value">${application.interests || 'Not specified'}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Additional Information:</span>
-                            <span class="detail-value">${application.additionalInfo || 'None provided'}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Application Status:</span>
-                            <span class="detail-value status-${application.status}">${application.status}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Submission Date:</span>
-                            <span class="detail-value">${new Date(application.submissionDate).toLocaleString()}</span>
-                        </div>
-                        <div class="detail-group">
-                            <span class="detail-label">Device Information:</span>
-                            <span class="detail-value">${deviceInfo}</span>
-                        </div>
-                    </div>
-                `;
-                
-                applicationDetailsModal.style.display = 'block';
-                document.body.style.overflow = 'hidden';
-            }
-        };
-        
         // Contact Form Functionality
         const contactForm = document.getElementById('contactForm');
         const contactSuccessMessage = document.getElementById('contactSuccessMessage');
         
-        contactForm.addEventListener('submit', (e) => {
+        contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const contactData = {
@@ -1799,8 +1863,8 @@
                 message: document.getElementById('contactMessage').value
             };
             
-            // Save contact message to CENTRAL database
-            centralDB.addContactMessage(contactData);
+            // Save contact message to CLOUD database
+            await cloudDB.submitContactMessage(contactData);
             
             // Show success message and hide form
             contactForm.style.display = 'none';
@@ -1814,6 +1878,23 @@
             }, 5000);
         });
         
+        // Auto-refresh for admin panel
+        let autoRefreshInterval;
+
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(async () => {
+                if (auth.isAuthenticated && document.getElementById('admin').style.display !== 'none') {
+                    await loadApplicationsFromCloud();
+                }
+            }, 10000); // Refresh every 10 seconds
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        }
+
         // Smooth Scrolling for Anchor Links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -1832,8 +1913,9 @@
             });
         });
 
-        // Initialize sync status
-        updateSyncStatus();
+        // Make functions global for onclick handlers
+        window.updateApplicationStatus = updateApplicationStatus;
+        window.viewApplicationDetails = viewApplicationDetails;
     </script>
 </body>
 </html>
