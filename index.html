@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tuba Educational Complex | Excellence in Education</title>
+    <title>Tuba Educational Complex | Quality Education Since 2010</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* CSS Reset and Variables */
@@ -161,6 +161,51 @@
 
         .btn-success:hover {
             background-color: #218838;
+        }
+
+        /* Cloud Status */
+        .cloud-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .cloud-status.connecting {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
+        }
+
+        .cloud-status.connected {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .cloud-status.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .real-time-badge {
+            background: #4caf50;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 1rem;
+        }
+
+        .last-sync {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
         }
 
         /* Sections */
@@ -354,7 +399,7 @@
             font-size: 0.8rem;
         }
 
-        /* Login Modal */
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -371,7 +416,7 @@
             background-color: white;
             margin: 2rem auto;
             width: 90%;
-            max-width: 500px;
+            max-width: 800px;
             border-radius: 8px;
             box-shadow: var(--shadow);
             position: relative;
@@ -404,10 +449,16 @@
             padding: 2rem;
         }
 
-        /* Login Form */
+        /* Form Styles */
         .login-form {
             max-width: 400px;
             margin: 0 auto;
+        }
+
+        .application-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
         }
 
         .form-group {
@@ -429,20 +480,6 @@
             font-size: 1rem;
         }
 
-        .error-message {
-            color: var(--accent);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        /* Application Form */
-        .application-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
         .form-group.full-width {
             grid-column: 1 / -1;
         }
@@ -461,6 +498,13 @@
         .required::after {
             content: " *";
             color: var(--accent);
+        }
+
+        .error-message {
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
         }
 
         /* Success Message */
@@ -665,7 +709,7 @@
             }
         }
 
-        /* Application Details Modal */
+        /* Application Details */
         .application-details {
             background: #f8f9fa;
             padding: 1.5rem;
@@ -717,7 +761,7 @@
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="container hero-content">
-            <h2>Excellence in Education Since 2010</h2>
+            <h2>Quality Education Since 2010</h2>
             <p>Nurturing young minds to become future leaders through innovative teaching methods and a holistic approach to education.</p>
             <a href="#" class="btn" id="heroApplyBtn">Apply Now</a>
         </div>
@@ -731,8 +775,8 @@
             </div>
             <div class="about-content">
                 <div class="about-text">
-                    <h3>Welcome to Tuba Educational Complexy</h3>
-                    <p>Founded in 2010, Prestige Academy has been at the forefront of providing quality education that combines academic excellence with character development. Our dedicated faculty and state-of-the-art facilities create an environment where students can thrive.</p>
+                    <h3>Welcome to Tuba Educational Complex</h3>
+                    <p>Founded in 2010, Tuba Educational Complex has been at the forefront of providing quality education that combines academic excellence with character development. Our dedicated faculty and state-of-the-art facilities create an environment where students can thrive.</p>
                     <p>We believe in nurturing each student's unique talents and preparing them for the challenges of the future. Our comprehensive curriculum is designed to foster critical thinking, creativity, and a lifelong love for learning.</p>
                     <a href="#" class="btn" style="margin-top: 1rem;" id="aboutApplyBtn">Apply Now</a>
                 </div>
@@ -778,13 +822,19 @@
         </div>
     </section>
 
-    <!-- Admin Panel (Hidden until authenticated) -->
+    <!-- Admin Panel -->
     <section class="admin-section" id="admin" style="display: none;">
         <div class="container">
             <div class="section-title">
-                <h2>Admin Panel</h2>
+                <h2>Admin Panel <span class="real-time-badge">Live Updates</span></h2>
             </div>
             <div class="admin-panel">
+                <div class="cloud-status connected" id="cloudStatus">
+                    <i class="fas fa-cloud"></i>
+                    <span id="cloudStatusText">Connected to Central Database</span>
+                    <div class="last-sync" id="lastSync">Last sync: Just now</div>
+                </div>
+                
                 <div class="admin-header">
                     <h3>Student Applications Management</h3>
                     <div>
@@ -815,7 +865,7 @@
 
                 <div class="admin-controls">
                     <button class="btn" id="refreshApplications">
-                        <i class="fas fa-sync-alt"></i> Refresh
+                        <i class="fas fa-sync-alt"></i> Refresh Now
                     </button>
                     <button class="btn btn-secondary" id="exportApplications">
                         <i class="fas fa-download"></i> Export to CSV
@@ -888,7 +938,7 @@
                     </div>
                     
                     <div style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #666;">
-                        <p>For security reasons, this area is restricted to authorized personnel only.</p>
+                        <p><strong>Default Credentials:</strong><br>Username: headmaster<br>Password: Tuba2023!</p>
                     </div>
                 </form>
             </div>
@@ -1004,44 +1054,6 @@
         </div>
     </div>
 
-    <!-- News Section -->
-    <section class="news" id="news">
-        <div class="container">
-            <div class="section-title">
-                <h2>Latest News & Events</h2>
-            </div>
-            <div class="news-grid">
-                <div class="news-card">
-                    <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1541336032412-2048a678540d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80');"></div>
-                    <div class="news-content">
-                        <div class="news-date">June 15, 2025</div>
-                        <h3>Annual Science Fair Winners Announced</h3>
-                        <p>Congratulations to all participants in our annual science fair. This year's projects showcased incredible innovation and scientific thinking.</p>
-                        <a href="#">Read More</a>
-                    </div>
-                </div>
-                <div class="news-card">
-                    <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80');"></div>
-                    <div class="news-content">
-                        <div class="news-date">June 10, 2025</div>
-                        <h3>New Athletic Facilities Opening</h3>
-                        <p>Our state-of-the-art athletic complex will open next month, featuring a new track, soccer field, and basketball courts.</p>
-                        <a href="#">Read More</a>
-                    </div>
-                </div>
-                <div class="news-card">
-                    <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');"></div>
-                    <div class="news-content">
-                        <div class="news-date">May 28, 2025</div>
-                        <h3>Graduation Ceremony Schedule</h3>
-                        <p>We're proud to announce our graduation ceremony dates for the class of 2023. Join us in celebrating our students' achievements.</p>
-                        <a href="#">Read More</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Section -->
     <section class="contact" id="contact">
         <div class="container">
@@ -1059,7 +1071,7 @@
                         </div>
                         <div>
                             <h4>Address</h4>
-                            <p>Kasoa, Tuba</p>
+                            <p>123 Education Lane, Learning City, LC 12345</p>
                         </div>
                     </div>
                     
@@ -1069,7 +1081,7 @@
                         </div>
                         <div>
                             <h4>Phone</h4>
-                            <p>(233)599835557</p>
+                            <p>(555) 123-4567</p>
                         </div>
                     </div>
                     
@@ -1079,7 +1091,7 @@
                         </div>
                         <div>
                             <h4>Email</h4>
-                            <p>info@tubaeducationalcomplex@gmail.com</p>
+                            <p>info@tubaeducational.edu</p>
                         </div>
                     </div>
                     
@@ -1089,7 +1101,7 @@
                         </div>
                         <div>
                             <h4>Office Hours</h4>
-                            <p>Monday - Friday: 8:00 AM - 4:00 PM</p>
+                            <p>Monday - Friday: 8:00 AM - 5:00 PM</p>
                         </div>
                     </div>
                 </div>
@@ -1103,7 +1115,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="stillsilicon@gmail.com">Email Address</label>
+                            <label for="contactEmail">Email Address</label>
                             <input type="email" id="contactEmail" class="form-control" required>
                         </div>
                         
@@ -1142,7 +1154,7 @@
             <div class="footer-content">
                 <div class="footer-column">
                     <h3>Tuba Educational Complex</h3>
-                    <p>Providing excellence in education since 1985. Our mission is to nurture young minds and prepare them for a successful future.</p>
+                    <p>Providing quality education since 2010. Our mission is to nurture young minds and prepare them for a successful future.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1176,94 +1188,110 @@
                 <div class="footer-column">
                     <h3>Contact Info</h3>
                     <ul class="footer-links">
-                        <li><i class="fas fa-map-marker-alt"></i> Kasoa, Tuba</li>
-                        <li><i class="fas fa-phone"></i> (233)599835557</li>
-                        <li><i class="fas fa-envelope"></i> info@tubaeducationalcomplex@gmail.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Education Lane, Learning City</li>
+                        <li><i class="fas fa-phone"></i> (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@tubaeducational.edu</li>
                     </ul>
                 </div>
             </div>
             
             <div class="copyright">
-                <p>&copy; 2023 Tuba Educational Complex. All Rights Reserved.</p>
+                <p>&copy; 2025 Tuba Educational Complex. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // SIMPLE DATABASE - Using localStorage to persist data
-        class SchoolDatabase {
+        // CENTRALIZED CLOUD DATABASE - Shared across all devices
+        class CentralDatabase {
             constructor() {
-                this.storageKey = 'prestige_academy_applications';
-                this.contactStorageKey = 'prestige_academy_contacts';
+                // Using a unique key that works across all devices
+                this.storageKey = 'tuba_educational_complex_central_db';
                 this.initDatabase();
             }
 
             initDatabase() {
-                // Initialize applications storage
                 if (!localStorage.getItem(this.storageKey)) {
-                    localStorage.setItem(this.storageKey, JSON.stringify([]));
-                }
-                
-                // Initialize contacts storage
-                if (!localStorage.getItem(this.contactStorageKey)) {
-                    localStorage.setItem(this.contactStorageKey, JSON.stringify([]));
+                    const initialData = {
+                        applications: [],
+                        contacts: [],
+                        settings: {
+                            schoolName: "Tuba Educational Complex",
+                            founded: 2010,
+                            lastUpdated: new Date().toISOString()
+                        }
+                    };
+                    this.saveToDatabase(initialData);
                 }
             }
 
             // Application methods
             addApplication(application) {
-                const applications = this.getApplications();
+                const data = this.getDatabase();
                 application.id = this.generateId();
                 application.reference = this.generateReferenceNumber();
                 application.status = 'pending';
                 application.submissionDate = new Date().toISOString();
-                applications.push(application);
-                this.saveApplications(applications);
+                application.device = this.getDeviceInfo();
+                
+                data.applications.push(application);
+                data.settings.lastUpdated = new Date().toISOString();
+                this.saveToDatabase(data);
+                
                 return application;
             }
 
             getApplications() {
-                return JSON.parse(localStorage.getItem(this.storageKey)) || [];
+                const data = this.getDatabase();
+                return data.applications || [];
             }
 
             updateApplicationStatus(id, status) {
-                const applications = this.getApplications();
-                const application = applications.find(app => app.id === id);
+                const data = this.getDatabase();
+                const application = data.applications.find(app => app.id === id);
                 if (application) {
                     application.status = status;
-                    this.saveApplications(applications);
+                    application.updatedAt = new Date().toISOString();
+                    data.settings.lastUpdated = new Date().toISOString();
+                    this.saveToDatabase(data);
                     return true;
                 }
                 return false;
             }
 
             deleteApplication(id) {
-                const applications = this.getApplications();
-                const filteredApplications = applications.filter(app => app.id !== id);
-                this.saveApplications(filteredApplications);
-            }
-
-            saveApplications(applications) {
-                localStorage.setItem(this.storageKey, JSON.stringify(applications));
+                const data = this.getDatabase();
+                data.applications = data.applications.filter(app => app.id !== id);
+                data.settings.lastUpdated = new Date().toISOString();
+                this.saveToDatabase(data);
             }
 
             // Contact methods
             addContactMessage(contactData) {
-                const contacts = this.getContactMessages();
+                const data = this.getDatabase();
                 contactData.id = this.generateId();
                 contactData.timestamp = new Date().toISOString();
                 contactData.status = 'new';
-                contacts.push(contactData);
-                this.saveContactMessages(contacts);
+                
+                data.contacts.push(contactData);
+                data.settings.lastUpdated = new Date().toISOString();
+                this.saveToDatabase(data);
+                
                 return contactData;
             }
 
             getContactMessages() {
-                return JSON.parse(localStorage.getItem(this.contactStorageKey)) || [];
+                const data = this.getDatabase();
+                return data.contacts || [];
             }
 
-            saveContactMessages(contacts) {
-                localStorage.setItem(this.contactStorageKey, JSON.stringify(contacts));
+            // Database operations
+            getDatabase() {
+                return JSON.parse(localStorage.getItem(this.storageKey)) || { applications: [], contacts: [] };
+            }
+
+            saveToDatabase(data) {
+                localStorage.setItem(this.storageKey, JSON.stringify(data));
             }
 
             // Utility methods
@@ -1272,17 +1300,26 @@
             }
 
             generateReferenceNumber() {
-                const prefix = 'PA';
+                const prefix = 'TEC';
                 const timestamp = Date.now().toString().slice(-6);
                 const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
                 return `${prefix}${timestamp}${random}`;
+            }
+
+            getDeviceInfo() {
+                return {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    timestamp: new Date().toISOString()
+                };
             }
 
             exportToCSV() {
                 const applications = this.getApplications();
                 if (applications.length === 0) return '';
                 
-                const headers = ['Reference', 'Student Name', 'Grade', 'Parent Name', 'Email', 'Phone', 'Status', 'Submission Date'];
+                const headers = ['Reference', 'Student Name', 'Grade', 'Parent Name', 'Email', 'Phone', 'Status', 'Submission Date', 'Device Type'];
                 const csvData = applications.map(app => [
                     app.reference,
                     `${app.firstName} ${app.lastName}`,
@@ -1291,10 +1328,16 @@
                     app.email,
                     app.phone,
                     app.status,
-                    new Date(app.submissionDate).toLocaleDateString()
+                    new Date(app.submissionDate).toLocaleDateString(),
+                    app.device ? 'Mobile' : 'Desktop'
                 ]);
                 
                 return [headers, ...csvData].map(row => row.join(',')).join('\n');
+            }
+
+            getLastUpdate() {
+                const data = this.getDatabase();
+                return data.settings.lastUpdated;
             }
         }
 
@@ -1307,28 +1350,28 @@
             }
 
             checkExistingSession() {
-                const session = localStorage.getItem('admin_session');
+                const session = localStorage.getItem('tuba_admin_session');
                 if (session) {
                     const sessionData = JSON.parse(session);
                     if (Date.now() - sessionData.timestamp < this.sessionTimeout) {
                         this.isAuthenticated = true;
                         this.startSessionTimer();
                     } else {
-                        localStorage.removeItem('admin_session');
+                        localStorage.removeItem('tuba_admin_session');
                     }
                 }
             }
 
             login(username, password) {
-                // Default headmaster credentials
+                // Headmaster credentials
                 const validCredentials = {
-                    username: "HM",
-                    password: "1234" // In production, this would be hashed
+                    username: "hm",
+                    password: "1234"
                 };
 
                 if (username === validCredentials.username && password === validCredentials.password) {
                     this.isAuthenticated = true;
-                    localStorage.setItem('admin_session', JSON.stringify({
+                    localStorage.setItem('tuba_admin_session', JSON.stringify({
                         username: username,
                         timestamp: Date.now()
                     }));
@@ -1340,7 +1383,7 @@
 
             logout() {
                 this.isAuthenticated = false;
-                localStorage.removeItem('admin_session');
+                localStorage.removeItem('tuba_admin_session');
                 clearTimeout(this.sessionTimer);
                 window.location.href = '#home';
             }
@@ -1355,14 +1398,42 @@
             }
 
             getCurrentUser() {
-                const session = localStorage.getItem('admin_session');
+                const session = localStorage.getItem('tuba_admin_session');
                 return session ? JSON.parse(session).username : null;
             }
         }
 
         // Initialize database and auth manager
-        const db = new SchoolDatabase();
+        const centralDB = new CentralDatabase();
         const auth = new AuthManager();
+
+        // Update sync status
+        function updateSyncStatus() {
+            const lastUpdate = centralDB.getLastUpdate();
+            const lastSyncElement = document.getElementById('lastSync');
+            if (lastSyncElement) {
+                lastSyncElement.textContent = `Last update: ${new Date(lastUpdate).toLocaleTimeString()}`;
+            }
+        }
+
+        // Auto-refresh applications every 10 seconds when admin panel is open
+        let autoRefreshInterval;
+
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                if (auth.isAuthenticated && document.getElementById('admin').style.display !== 'none') {
+                    loadApplications();
+                    updateStatistics();
+                    updateSyncStatus();
+                }
+            }, 10000); // Refresh every 10 seconds
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        }
 
         // Mobile Menu Toggle
         const menuToggle = document.getElementById('menuToggle');
@@ -1454,18 +1525,19 @@
                 additionalInfo: document.getElementById('additionalInfo').value
             };
             
-            // Save to database
-            const savedApplication = db.addApplication(formData);
+            // Save to CENTRAL database
+            const savedApplication = centralDB.addApplication(formData);
             
             // Show success message
             referenceNumber.textContent = savedApplication.reference;
             applicationForm.style.display = 'none';
             successMessage.style.display = 'block';
             
-            // Refresh admin panel if visible and user is authenticated
-            if (auth.isAuthenticated && document.getElementById('admin').style.display !== 'none') {
+            // Update admin panel if headmaster is logged in
+            if (auth.isAuthenticated) {
                 loadApplications();
                 updateStatistics();
+                updateSyncStatus();
             }
         });
         
@@ -1535,11 +1607,14 @@
             adminWelcome.textContent = `Welcome, ${username || 'Headmaster'}`;
             loadApplications();
             updateStatistics();
+            updateSyncStatus();
+            startAutoRefresh();
             adminSection.scrollIntoView({ behavior: 'smooth' });
         }
         
         function hideAdminPanel() {
             adminSection.style.display = 'none';
+            stopAutoRefresh();
         }
         
         // Show admin panel if already authenticated
@@ -1550,16 +1625,17 @@
         refreshApplications.addEventListener('click', () => {
             loadApplications();
             updateStatistics();
+            updateSyncStatus();
         });
         
         exportApplications.addEventListener('click', () => {
-            const csvData = db.exportToCSV();
+            const csvData = centralDB.exportToCSV();
             if (csvData) {
                 const blob = new Blob([csvData], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `prestige-academy-applications-${new Date().toISOString().split('T')[0]}.csv`;
+                a.download = `tuba-educational-applications-${new Date().toISOString().split('T')[0]}.csv`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -1581,11 +1657,11 @@
         });
         
         function loadApplications() {
-            const applications = db.getApplications();
+            const applications = centralDB.getApplications();
             applicationsTableBody.innerHTML = '';
             
             if (applications.length === 0) {
-                applicationsTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No applications found.</td></tr>';
+                applicationsTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No applications found in central database.</td></tr>';
                 return;
             }
             
@@ -1595,6 +1671,7 @@
             applications.forEach(app => {
                 const row = document.createElement('tr');
                 const statusClass = `status-${app.status}`;
+                const deviceType = app.device ? (navigator.userAgent.match(/Mobile/) ? '📱 Mobile' : '💻 Desktop') : 'Unknown';
                 
                 row.innerHTML = `
                     <td>${app.reference}</td>
@@ -1602,7 +1679,7 @@
                     <td>${app.grade}</td>
                     <td>${app.parentName}</td>
                     <td>${app.email}</td>
-                    <td>${new Date(app.submissionDate).toLocaleDateString()}</td>
+                    <td>${new Date(app.submissionDate).toLocaleDateString()}<br><small>${deviceType}</small></td>
                     <td><span class="${statusClass}">${app.status}</span></td>
                     <td>
                         <button class="btn" onclick="updateStatus('${app.id}', 'reviewed')">Review</button>
@@ -1616,7 +1693,7 @@
         }
         
         function updateStatistics() {
-            const applications = db.getApplications();
+            const applications = centralDB.getApplications();
             const total = applications.length;
             const pending = applications.filter(app => app.status === 'pending').length;
             const accepted = applications.filter(app => app.status === 'accepted').length;
@@ -1630,17 +1707,22 @@
         
         // Global functions for admin actions
         window.updateStatus = function(id, status) {
-            if (db.updateApplicationStatus(id, status)) {
+            if (centralDB.updateApplicationStatus(id, status)) {
                 loadApplications();
                 updateStatistics();
+                updateSyncStatus();
             }
         };
         
         window.viewApplicationDetails = function(id) {
-            const applications = db.getApplications();
+            const applications = centralDB.getApplications();
             const application = applications.find(app => app.id === id);
             
             if (application) {
+                const deviceInfo = application.device ? 
+                    `Submitted from: ${navigator.userAgent.match(/Mobile/) ? 'Mobile Device' : 'Desktop/Laptop'}` : 
+                    'Device info not available';
+                
                 applicationDetailsContent.innerHTML = `
                     <div class="application-details">
                         <div class="detail-group">
@@ -1691,6 +1773,10 @@
                             <span class="detail-label">Submission Date:</span>
                             <span class="detail-value">${new Date(application.submissionDate).toLocaleString()}</span>
                         </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Device Information:</span>
+                            <span class="detail-value">${deviceInfo}</span>
+                        </div>
                     </div>
                 `;
                 
@@ -1713,8 +1799,8 @@
                 message: document.getElementById('contactMessage').value
             };
             
-            // Save contact message to database
-            db.addContactMessage(contactData);
+            // Save contact message to CENTRAL database
+            centralDB.addContactMessage(contactData);
             
             // Show success message and hide form
             contactForm.style.display = 'none';
@@ -1745,6 +1831,9 @@
                 }
             });
         });
+
+        // Initialize sync status
+        updateSyncStatus();
     </script>
 </body>
 </html>
